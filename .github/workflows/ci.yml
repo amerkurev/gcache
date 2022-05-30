@@ -1,0 +1,41 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up go 1.18
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build and test
+        run: |
+          go get -v
+          go test -timeout=60s -race -covermode=atomic -coverprofile=$GITHUB_WORKSPACE/profile.cov
+          go build -race
+
+      - name: Install golangci-lint and goveralls
+        run: |
+          curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $GITHUB_WORKSPACE v1.46.2
+          GO111MODULE=off go get -u -v github.com/mattn/goveralls
+
+      - name: Run linters
+        run: $GITHUB_WORKSPACE/golangci-lint run
+
+      - name: Submit coverage
+        run: $(go env GOPATH)/bin/goveralls -service="github" -coverprofile=$GITHUB_WORKSPACE/profile.cov
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
