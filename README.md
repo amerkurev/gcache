@@ -6,4 +6,4 @@ Concurrency-safe Go caching library with generics support and multiple cache sto
 [![GoReportCard](https://goreportcard.com/badge/github.com/amerkurev/gcache)](https://goreportcard.com/report/github.com/amerkurev/gcache)
 [![CoverageStatus](https://coveralls.io/repos/github/amerkurev/gcache/badge.svg)](https://coveralls.io/github/amerkurev/gcache)
 [![GoDoc](https://godoc.org/github.com/amerkurev/gcache?status.svg)](https://godoc.org/github.com/amerkurev/gcache)
-[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/amerkurev/gcache/master/LICENSE)
+[![License](http://img.shields.io/badge/license-mit-blue.svg)](https://raw.githubusercontent.com/amerkurev/gcache/master/LICENSE)
