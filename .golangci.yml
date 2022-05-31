@@ -22,8 +22,6 @@ linters-settings:
   gocritic:
     enabled-tags:
       - performance
-      - style
-      - experimental
     disabled-checks:
       - wrapperFunc
       - hugeParam
