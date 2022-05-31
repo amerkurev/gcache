@@ -1,8 +1,8 @@
 package gcache
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -12,10 +12,26 @@ func (*StringHasher) Hash(v any) (string, error) {
 	return fmt.Sprintf("%+v", v), nil
 }
 
+type JSONMarshaler struct{}
+
+func (m *JSONMarshaler) Marshal(v any) ([]byte, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+func (m *JSONMarshaler) Unmarshal(b []byte, v any) error {
+	err := json.Unmarshal(b, v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func TestCache_SetHasher(t *testing.T) {
 	c := New[string, int64]()
 	c.SetHasher(&StringHasher{})
-	k, err := c.Hash([]int{1, 2, 3})
-	assert.Nil(t, err)
-	assert.Equal(t, k, "[1 2 3]")
+	c.SetMarshaler(&JSONMarshaler{})
 }

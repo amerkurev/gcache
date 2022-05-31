@@ -1,4 +1,4 @@
-package hash
+package hasher
 
 import (
 	"errors"
@@ -9,11 +9,11 @@ import (
 
 func TestHasherError_Error(t *testing.T) {
 	err := errors.New("some error")
-	hErr := &HasherError{
+	hErr := &Error{
 		Type: reflect.TypeOf(int64(1)),
 		Err:  err,
 	}
-	assert.Equal(t, hErr.Error(), "hash error for type int64: some error")
+	assert.Equal(t, hErr.Error(), "error when hashing object of type int64: some error")
 	assert.True(t, errors.Is(hErr, err))
 	assert.True(t, errors.As(hErr, &err))
 }

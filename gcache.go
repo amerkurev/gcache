@@ -1,25 +1,34 @@
 package gcache
 
 import (
-	"github.com/amerkurev/gcache/internal/hash"
+	"github.com/amerkurev/gcache/internal/hasher"
+	"github.com/amerkurev/gcache/internal/marshaler"
 )
 
 // Cache represents the interface for all caches
 type Cache[K comparable, V any] interface {
-	Hash(any) (string, error)
-	SetHasher(hash.Hasher)
+	SetHasher(hasher.Hasher)
+	SetMarshaler(marshaler.Marshaler)
 }
 
 type cache[K comparable, V any] struct {
-	hash.Hasher
+	hasher.Hasher
+	marshaler.Marshaler
 }
 
-// New creates a new instance of gcache.
+// New creates a new instance of cache object.
 func New[K comparable, V any]() Cache[K, V] {
-	return &cache[K, V]{&hash.MsgpackHasher{}}
+	return &cache[K, V]{
+		Hasher:    &hasher.MsgpackHasher{},
+		Marshaler: &marshaler.MsgpackMarshaler{},
+	}
 }
 
 // SetHasher sets a hasher that provides a hash function for cache key create.
-func (c *cache[K, V]) SetHasher(hasher hash.Hasher) {
-	c.Hasher = hasher
+func (c *cache[K, V]) SetHasher(h hasher.Hasher) {
+	c.Hasher = h
+}
+
+func (c *cache[K, V]) SetMarshaler(m marshaler.Marshaler) {
+	c.Marshaler = m
 }
