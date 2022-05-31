@@ -9,24 +9,24 @@ import (
 
 func TestMarshalError_Error(t *testing.T) {
 	err := errors.New("some marshal error")
-	hErr := &MarshalError{
+	e := &MarshalError{
 		Type: reflect.TypeOf(int64(1)),
 		Err:  err,
 	}
-	assert.Equal(t, hErr.Error(), "cannot serialize object of type int64: some marshal error")
-	assert.True(t, errors.Is(hErr, err))
-	assert.True(t, errors.As(hErr, &err))
+	assert.Equal(t, e.Error(), "cannot serialize object of type int64: some marshal error")
+	assert.True(t, errors.Is(e, err))
+	assert.True(t, errors.As(e, &err))
 }
 
 func TestUnmarshalError_Error(t *testing.T) {
 	err := errors.New("some unmarshal error")
-	hErr := &UnmarshalError{
+	e := &UnmarshalError{
 		Type: reflect.TypeOf(int64(1)),
 		Err:  err,
 	}
-	assert.Equal(t, hErr.Error(), "cannot deserialize object of type int64: some unmarshal error")
-	assert.True(t, errors.Is(hErr, err))
-	assert.True(t, errors.As(hErr, &err))
+	assert.Equal(t, e.Error(), "cannot deserialize object of type int64: some unmarshal error")
+	assert.True(t, errors.Is(e, err))
+	assert.True(t, errors.As(e, &err))
 }
 
 func TestMsgpackMarshaler_Marshal(t *testing.T) {

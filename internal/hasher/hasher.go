@@ -26,8 +26,7 @@ func (e *Error) Error() string {
 // Unwrap returns the underlying error.
 func (e *Error) Unwrap() error { return e.Err }
 
-// MsgpackHasher is a default hasher that uses msgpack marshaling and
-// hashing algorithm for create a hash of value.
+// MsgpackHasher is a default hasher that uses msgpack marshaling and hashing algorithm for create a hash of value.
 type MsgpackHasher struct{}
 
 // Hash creates a hash string of any value.
