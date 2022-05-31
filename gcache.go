@@ -5,7 +5,7 @@ import (
 	"github.com/amerkurev/gcache/internal/hasher"
 	"github.com/amerkurev/gcache/internal/marshaler"
 	"github.com/amerkurev/gcache/internal/store"
-	impl "github.com/amerkurev/gcache/pkg/store"
+	impl "github.com/amerkurev/gcache/store"
 )
 
 // Cache represents the interface for all caches

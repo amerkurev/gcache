@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	. "github.com/amerkurev/gcache/pkg/store"
+	. "github.com/amerkurev/gcache/store"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
