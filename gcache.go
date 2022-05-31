@@ -24,7 +24,6 @@ func New[K comparable, V any]() Cache[K, V] {
 	}
 }
 
-// SetHasher sets a hasher that provides a hash function for cache key create.
 func (c *cache[K, V]) SetHasher(h hasher.Hasher) {
 	c.Hasher = h
 }
