@@ -1,5 +1,5 @@
 # gcache
-Concurrency-safe Go caching library with generics support and multiple cache stores.
+Concurrency-safe Go caching library with generics support, different data storages and stats monitoring.
 
 [![GoVersion](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/gomods/athens)
 [![Build](https://github.com/amerkurev/gcache/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/amerkurev/gcache/actions/workflows/ci.yml)
