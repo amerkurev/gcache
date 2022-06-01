@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"errors"
-	"github.com/amerkurev/gcache/internal/store"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -28,12 +27,12 @@ func TestMapStore(t *testing.T) {
 
 	b, err = s.Get(ctx, key)
 	assert.Nil(t, b)
-	assert.True(t, errors.Is(err, store.ErrNotFound))
+	assert.True(t, errors.Is(err, ErrNotFound))
 
 	err = s.Clear(ctx)
 	assert.Nil(t, err)
 
 	b, err = s.Get(ctx, "a")
 	assert.Nil(t, b)
-	assert.True(t, errors.Is(err, store.ErrNotFound))
+	assert.True(t, errors.Is(err, ErrNotFound))
 }

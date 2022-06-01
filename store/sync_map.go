@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"github.com/amerkurev/gcache/internal/store"
 	"sync"
 )
 
@@ -12,7 +11,7 @@ type mapStore struct {
 }
 
 // MapStore creates a store that is like a Go map but is safe for concurrent use by multiple goroutines.
-func MapStore(size int) store.Store {
+func MapStore(size int) Store {
 	return &mapStore{
 		m: make(map[string][]byte, size),
 	}
@@ -23,7 +22,7 @@ func (s *mapStore) Get(_ context.Context, key string) ([]byte, error) {
 	defer s.mx.RUnlock()
 	v, ok := s.m[key]
 	if !ok {
-		return nil, store.ErrNotFound
+		return nil, ErrNotFound
 	}
 	return v, nil
 }

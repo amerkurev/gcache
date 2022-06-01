@@ -4,8 +4,7 @@ import (
 	"context"
 	"github.com/amerkurev/gcache/internal/hasher"
 	"github.com/amerkurev/gcache/internal/marshaler"
-	"github.com/amerkurev/gcache/internal/store"
-	impl "github.com/amerkurev/gcache/store"
+	"github.com/amerkurev/gcache/store"
 )
 
 // Cache represents the interface for all caches
@@ -92,7 +91,7 @@ func New[K comparable, V any](s store.Store) Cache[K, V] {
 // NewMapCache creates a new instance of cache object with the MapStore as a data store.
 // MapStore is like a Go map but is safe for concurrent use by multiple goroutines.
 func NewMapCache[K comparable, V any](size int) Cache[K, V] {
-	return New[K, V](impl.MapStore(size))
+	return New[K, V](store.MapStore(size))
 }
 
 // ErrNotFound indicates that key not found in the cache.
