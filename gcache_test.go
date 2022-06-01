@@ -117,6 +117,47 @@ func TestNewMapCache_Struct(t *testing.T) {
 	assert.True(t, errors.Is(err, ErrNotFound))
 }
 
+func TestCache_Concurrency(t *testing.T) {
+	c := NewMapCache[int, int](0)
+
+	goroutines := 10
+	items := 10_000
+
+	var wg sync.WaitGroup
+
+	// concurrency write
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for k := 0; k < items; k++ {
+				// write
+				err := c.Set(k, k*k)
+				assert.Nil(t, err)
+
+				// read
+				v, err := c.Get(k + 1)
+				if err != nil {
+					assert.True(t, errors.Is(err, ErrNotFound))
+				} else {
+					assert.Equal(t, v, (k+1)*(k+1))
+				}
+
+				// delete
+				err = c.Delete(k - 10)
+				assert.Nil(t, err)
+
+				// clear
+				if k%1000 == 0 {
+					err := c.Clear()
+					assert.Nil(t, err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
 func TestCache_Stats(t *testing.T) {
 	c := NewMapCache[int, int](0)
 	c.UseStats()
