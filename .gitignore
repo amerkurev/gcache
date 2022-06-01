@@ -17,3 +17,6 @@ coverage.txt
 
 # IDE
 .idea
+
+# System
+.DS_Store
