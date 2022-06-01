@@ -3,8 +3,10 @@ package gcache
 import (
 	"context"
 	"errors"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/allegro/bigcache/v3"
 	"github.com/amerkurev/gcache/store"
+	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
@@ -205,6 +207,96 @@ func TestBigCache_Concurrency(t *testing.T) {
 		}()
 	}
 	wg.Wait()
+}
+
+func TestRedisCache_Concurrency(t *testing.T) {
+	addr := "127.0.0.1:6379"
+	m := miniredis.NewMiniRedis()
+	if err := m.StartAddr(addr); err != nil {
+		t.Fatalf("could not start miniredis: %s", err)
+		// not reached
+	}
+	t.Cleanup(m.Close)
+
+	ctx := context.Background()
+	rdb := redis.NewClient(&redis.Options{
+		Addr: addr,
+		DB:   0,
+	})
+
+	c := New[int, int](store.RedisStore(rdb))
+
+	goroutines := 10
+	items := 1000
+
+	var wg sync.WaitGroup
+
+	// concurrency write
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for k := 0; k < items; k++ {
+				// write
+				err := c.SetWithContext(ctx, k, k*k)
+				assert.Nil(t, err)
+
+				// read
+				v, err := c.GetWithContext(ctx, k+1)
+				if err != nil {
+					assert.True(t, errors.Is(err, ErrNotFound))
+				} else {
+					assert.Equal(t, v, (k+1)*(k+1))
+				}
+
+				// delete
+				err = c.DeleteWithContext(ctx, k-10)
+				assert.Nil(t, err)
+				err = c.Delete(k - 10)
+				assert.Nil(t, err)
+
+				// clear
+				if k%1000 == 0 {
+					err := c.ClearWithContext(ctx)
+					assert.Nil(t, err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func TestRedisCache_Context(t *testing.T) {
+	addr := "127.0.0.1:6379"
+	m := miniredis.NewMiniRedis()
+	if err := m.StartAddr(addr); err != nil {
+		t.Fatalf("could not start miniredis: %s", err)
+		// not reached
+	}
+	t.Cleanup(m.Close)
+
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	rdb := redis.NewClient(&redis.Options{
+		Addr: addr,
+		DB:   0,
+	})
+
+	c := New[int, int](store.RedisStore(rdb))
+
+	go func() {
+		for k := 0; k < 100_000; k++ {
+			err := c.SetWithContext(ctx, k, k*k)
+			if err != nil {
+				assert.True(t, errors.Is(err, context.Canceled))
+				break
+			}
+		}
+	}()
+
+	cancel()
+	r := <-ctx.Done()
+	assert.Equal(t, r, struct{}{})
 }
 
 func TestCacheStats(t *testing.T) {
