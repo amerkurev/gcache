@@ -11,10 +11,9 @@ type mapStore struct {
 }
 
 // MapStore creates a store that is like a Go map but is safe for concurrent use by multiple goroutines.
-func MapStore(size int) (Store, error) {
-	return &mapStore{
-		m: make(map[string][]byte, size),
-	}, nil
+func MapStore(size int) Store {
+	m := make(map[string][]byte, size)
+	return &mapStore{m: m}
 }
 
 func (s *mapStore) Get(_ context.Context, key string) ([]byte, error) {

@@ -12,15 +12,8 @@ type bigcacheStore struct {
 
 // BigcacheStore creates a Bigcache data store.
 // See Bigcache docs https://github.com/allegro/bigcache.
-func BigcacheStore(config bigcache.Config) (Store, error) {
-	cache, err := bigcache.NewBigCache(config)
-	if err != nil {
-		return nil, err
-	}
-
-	return &bigcacheStore{
-		bc: cache,
-	}, nil
+func BigcacheStore(bc *bigcache.BigCache) Store {
+	return &bigcacheStore{bc}
 }
 
 func (b *bigcacheStore) Get(_ context.Context, key string) ([]byte, error) {

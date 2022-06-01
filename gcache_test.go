@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/allegro/bigcache/v3"
+	"github.com/amerkurev/gcache/store"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
@@ -12,10 +13,9 @@ import (
 
 func TestMapCache_Int64(t *testing.T) {
 	ctx := context.Background()
-	c, err := NewMapCache[int64, int64](0)
-	assert.Nil(t, err)
+	c := New[int64, int64](store.MapStore(0))
 
-	err = c.Set(1, 1000)
+	err := c.Set(1, 1000)
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, 2, 2000)
 	assert.Nil(t, err)
@@ -48,10 +48,9 @@ func TestMapCache_Int64(t *testing.T) {
 
 func TestMapCache_String(t *testing.T) {
 	ctx := context.Background()
-	c, err := NewMapCache[string, string](0)
-	assert.Nil(t, err)
+	c := New[string, string](store.MapStore(0))
 
-	err = c.Set("a", "some value")
+	err := c.Set("a", "some value")
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, "b", "another value")
 	assert.Nil(t, err)
@@ -88,10 +87,9 @@ type user struct {
 
 func TestMapCache_Struct(t *testing.T) {
 	ctx := context.Background()
-	c, err := NewMapCache[int, *user](0)
-	assert.Nil(t, err)
+	c := New[int, *user](store.MapStore(0))
 
-	err = c.Set(100, &user{"John"})
+	err := c.Set(100, &user{"John"})
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, 200, &user{"Mary"})
 	assert.Nil(t, err)
@@ -123,8 +121,7 @@ func TestMapCache_Struct(t *testing.T) {
 }
 
 func TestMapCache_Concurrency(t *testing.T) {
-	c, err := NewMapCache[int, int](0)
-	assert.Nil(t, err)
+	c := New[int, int](store.MapStore(0))
 
 	goroutines := 10
 	items := 10_000
@@ -165,8 +162,10 @@ func TestMapCache_Concurrency(t *testing.T) {
 }
 
 func TestBigCache_Concurrency(t *testing.T) {
-	c, err := NewBigCache[int, int](bigcache.DefaultConfig(10 * time.Minute))
+	s, err := bigcache.NewBigCache(bigcache.DefaultConfig(10 * time.Minute))
 	assert.Nil(t, err)
+
+	c := New[int, int](store.BigcacheStore(s))
 
 	goroutines := 10
 	items := 10_000
@@ -209,8 +208,7 @@ func TestBigCache_Concurrency(t *testing.T) {
 }
 
 func TestCacheStats(t *testing.T) {
-	c, err := NewMapCache[int, int](0)
-	assert.Nil(t, err)
+	c := New[int, int](store.MapStore(0))
 	c.UseStats()
 
 	goroutines := 10

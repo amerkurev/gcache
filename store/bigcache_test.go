@@ -10,10 +10,11 @@ import (
 )
 
 func TestBigcacheStore(t *testing.T) {
-	s, err := BigcacheStore(bigcache.DefaultConfig(10 * time.Minute))
-	assert.Nil(t, err)
-
 	ctx := context.Background()
+	store, err := bigcache.NewBigCache(bigcache.DefaultConfig(10 * time.Minute))
+	assert.Nil(t, err)
+	s := BigcacheStore(store)
+
 	key := "a"
 	err = s.Set(ctx, key, nil)
 	assert.Nil(t, err)

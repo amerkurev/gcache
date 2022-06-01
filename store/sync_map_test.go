@@ -8,12 +8,11 @@ import (
 )
 
 func TestMapStore(t *testing.T) {
-	s, err := MapStore(0)
-	assert.Nil(t, err)
-
 	ctx := context.Background()
+	s := MapStore(0)
+
 	key := "a"
-	err = s.Set(ctx, key, nil)
+	err := s.Set(ctx, key, nil)
 	assert.Nil(t, err)
 
 	key = "b"
