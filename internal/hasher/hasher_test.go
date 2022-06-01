@@ -31,4 +31,8 @@ func TestMsgpackHasher_Hash(t *testing.T) {
 	k, err = h.Hash("some key")
 	assert.Nil(t, err)
 	assert.Equal(t, k, "0dc44df765b1ef70e8b5069777b6cb177fdeef0cc977327b9e19e4a3dad24818")
+
+	var m map[string]struct{}
+	k, err = h.Hash(m)
+	assert.Nil(t, err)
 }

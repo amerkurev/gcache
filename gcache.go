@@ -19,9 +19,6 @@ type Cache[KeyType comparable, ValueType any] interface {
 	SetWithContext(context.Context, KeyType, ValueType) error
 	DeleteWithContext(context.Context, KeyType) error
 	ClearWithContext(context.Context) error
-
-	SetHasher(hasher.Hasher)
-	SetMarshaler(marshaler.Marshaler)
 }
 
 type cache[KeyType comparable, ValueType any] struct {
@@ -81,14 +78,6 @@ func (c *cache[K, V]) DeleteWithContext(ctx context.Context, key K) error {
 
 func (c *cache[K, V]) ClearWithContext(ctx context.Context) error {
 	return c.Store.Clear(ctx)
-}
-
-func (c *cache[K, V]) SetHasher(h hasher.Hasher) {
-	c.Hasher = h
-}
-
-func (c *cache[K, V]) SetMarshaler(m marshaler.Marshaler) {
-	c.Marshaler = m
 }
 
 // New creates a new instance of cache object.

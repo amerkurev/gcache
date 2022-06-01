@@ -2,47 +2,10 @@ package gcache
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
-	. "github.com/amerkurev/gcache/store"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
-
-type StringHasher struct{}
-
-func (*StringHasher) Hash(v any) (string, error) {
-	return fmt.Sprintf("%+v", v), nil
-}
-
-func TestCache_SetHasher(t *testing.T) {
-	c := New[string, int64](MapStore(0))
-	c.SetHasher(&StringHasher{})
-}
-
-type JSONMarshaler struct{}
-
-func (m *JSONMarshaler) Marshal(v any) ([]byte, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-func (m *JSONMarshaler) Unmarshal(b []byte, v any) error {
-	err := json.Unmarshal(b, v)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func TestCache_SetMarshaler(t *testing.T) {
-	c := New[string, int64](MapStore(0))
-	c.SetMarshaler(&JSONMarshaler{})
-}
 
 func TestNewMapCache_Int(t *testing.T) {
 	ctx := context.Background()
