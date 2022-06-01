@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestHasherError_Error(t *testing.T) {
+func TestHasherError(t *testing.T) {
 	err := errors.New("some error")
 	e := &Error{
 		Type: reflect.TypeOf(int64(1)),
@@ -18,7 +18,7 @@ func TestHasherError_Error(t *testing.T) {
 	assert.True(t, errors.As(e, &err))
 }
 
-func TestMsgpackHasher_Hash(t *testing.T) {
+func TestMsgpackHasher(t *testing.T) {
 	h := &MsgpackHasher{}
 	k, err := h.Hash(map[string]struct{}{})
 	assert.Nil(t, err)

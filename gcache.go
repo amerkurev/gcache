@@ -3,6 +3,7 @@ package gcache
 import (
 	"context"
 	"errors"
+	"github.com/allegro/bigcache/v3"
 	"github.com/amerkurev/gcache/internal/hasher"
 	"github.com/amerkurev/gcache/internal/marshaler"
 	"github.com/amerkurev/gcache/internal/stats"
@@ -167,8 +168,20 @@ func New[K comparable, V any](s store.Store) Cache[K, V] {
 
 // NewMapCache creates a new instance of cache object with the MapStore as a data store.
 // MapStore is like a Go map but is safe for concurrent use by multiple goroutines.
-func NewMapCache[K comparable, V any](size int) Cache[K, V] {
-	return New[K, V](store.MapStore(size))
+func NewMapCache[K comparable, V any](size int) (Cache[K, V], error) {
+	s, err := store.MapStore(size)
+	if err != nil {
+		return nil, err
+	}
+	return New[K, V](s), nil
+}
+
+func NewBigCache[K comparable, V any](config bigcache.Config) (Cache[K, V], error) {
+	s, err := store.BigcacheStore(config)
+	if err != nil {
+		return nil, err
+	}
+	return New[K, V](s), nil
 }
 
 // ErrNotFound indicates that key not found in the cache.

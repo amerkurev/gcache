@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestKeyNotFound_Error(t *testing.T) {
+func TestKeyNotFound(t *testing.T) {
 	err := errors.New("some error")
 	assert.Equal(t, ErrNotFound.Error(), "key not found")
 	assert.False(t, errors.Is(err, ErrNotFound))

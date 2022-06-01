@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestMarshalError_Error(t *testing.T) {
+func TestMarshalError(t *testing.T) {
 	err := errors.New("some marshal error")
 	e := &MarshalError{
 		Type: reflect.TypeOf(int64(1)),
@@ -18,7 +18,7 @@ func TestMarshalError_Error(t *testing.T) {
 	assert.True(t, errors.As(e, &err))
 }
 
-func TestUnmarshalError_Error(t *testing.T) {
+func TestUnmarshalError(t *testing.T) {
 	err := errors.New("some unmarshal error")
 	e := &UnmarshalError{
 		Type: reflect.TypeOf(int64(1)),

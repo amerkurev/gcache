@@ -3,12 +3,14 @@ package store
 import (
 	"context"
 	"errors"
+	"github.com/allegro/bigcache/v3"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
-func TestMapStore(t *testing.T) {
-	s, err := MapStore(0)
+func TestBigcacheStore(t *testing.T) {
+	s, err := BigcacheStore(bigcache.DefaultConfig(10 * time.Minute))
 	assert.Nil(t, err)
 
 	ctx := context.Background()

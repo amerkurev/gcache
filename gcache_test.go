@@ -3,16 +3,19 @@ package gcache
 import (
 	"context"
 	"errors"
+	"github.com/allegro/bigcache/v3"
 	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
+	"time"
 )
 
-func TestNewMapCache_Int64(t *testing.T) {
+func TestMapCache_Int64(t *testing.T) {
 	ctx := context.Background()
-	c := NewMapCache[int64, int64](0)
+	c, err := NewMapCache[int64, int64](0)
+	assert.Nil(t, err)
 
-	err := c.Set(1, 1000)
+	err = c.Set(1, 1000)
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, 2, 2000)
 	assert.Nil(t, err)
@@ -43,11 +46,12 @@ func TestNewMapCache_Int64(t *testing.T) {
 	assert.True(t, errors.Is(err, ErrNotFound))
 }
 
-func TestNewMapCache_String(t *testing.T) {
+func TestMapCache_String(t *testing.T) {
 	ctx := context.Background()
-	c := NewMapCache[string, string](0)
+	c, err := NewMapCache[string, string](0)
+	assert.Nil(t, err)
 
-	err := c.Set("a", "some value")
+	err = c.Set("a", "some value")
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, "b", "another value")
 	assert.Nil(t, err)
@@ -82,11 +86,12 @@ type user struct {
 	Name string
 }
 
-func TestNewMapCache_Struct(t *testing.T) {
+func TestMapCache_Struct(t *testing.T) {
 	ctx := context.Background()
-	c := NewMapCache[int, *user](0)
+	c, err := NewMapCache[int, *user](0)
+	assert.Nil(t, err)
 
-	err := c.Set(100, &user{"John"})
+	err = c.Set(100, &user{"John"})
 	assert.Nil(t, err)
 	err = c.SetWithContext(ctx, 200, &user{"Mary"})
 	assert.Nil(t, err)
@@ -117,8 +122,9 @@ func TestNewMapCache_Struct(t *testing.T) {
 	assert.True(t, errors.Is(err, ErrNotFound))
 }
 
-func TestCache_Concurrency(t *testing.T) {
-	c := NewMapCache[int, int](0)
+func TestMapCache_Concurrency(t *testing.T) {
+	c, err := NewMapCache[int, int](0)
+	assert.Nil(t, err)
 
 	goroutines := 10
 	items := 10_000
@@ -158,8 +164,53 @@ func TestCache_Concurrency(t *testing.T) {
 	wg.Wait()
 }
 
-func TestCache_Stats(t *testing.T) {
-	c := NewMapCache[int, int](0)
+func TestBigCache_Concurrency(t *testing.T) {
+	c, err := NewBigCache[int, int](bigcache.DefaultConfig(10 * time.Minute))
+	assert.Nil(t, err)
+
+	goroutines := 10
+	items := 10_000
+
+	var wg sync.WaitGroup
+
+	// concurrency write
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for k := 0; k < items; k++ {
+				// write
+				err := c.Set(k, k*k)
+				assert.Nil(t, err)
+
+				// read
+				v, err := c.Get(k + 1)
+				if err != nil {
+					assert.True(t, errors.Is(err, ErrNotFound))
+				} else {
+					assert.Equal(t, v, (k+1)*(k+1))
+				}
+
+				// delete
+				err = c.Delete(k - 10)
+				assert.Nil(t, err)
+				err = c.Delete(k - 10)
+				assert.Nil(t, err)
+
+				// clear
+				if k%1000 == 0 {
+					err := c.Clear()
+					assert.Nil(t, err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func TestCacheStats(t *testing.T) {
+	c, err := NewMapCache[int, int](0)
+	assert.Nil(t, err)
 	c.UseStats()
 
 	goroutines := 10
