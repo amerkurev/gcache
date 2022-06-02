@@ -30,7 +30,7 @@
 ## Install
 gcache requires a Go version with Generics support (Go 1.18 or newer). To install gcache, use `go get`:
 
-    go get github.com/amerkurev/gcache@v0.1.0
+    go get github.com/amerkurev/gcache
     
 ## Quickstart
 See it in action:
