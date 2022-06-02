@@ -280,7 +280,7 @@ func TestSQLiteCache_Concurrency(t *testing.T) {
 	c := New[int, int](s)
 
 	goroutines := 10
-	items := 1000
+	items := 100
 
 	var wg sync.WaitGroup
 
