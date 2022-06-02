@@ -147,6 +147,30 @@ func main() {
 
 ### SQLiteStore
 SQLite is a lightweight disk-based database that doesn’t require a separate server process.
+```go
+import (
+	"context"
+	"database/sql"
+	"github.com/amerkurev/gcache"
+	"github.com/amerkurev/gcache/store"
+)
+
+func main() {
+	ctx := context.Background()
+	db, err := sql.Open("sqlite3", "test.db")
+	if err != nil {
+		panic(err)
+	}
+
+	sqliteStore, err := store.SQLiteStore(ctx, db)
+	if err != nil {
+		panic(err)
+	}
+
+	c := gcache.New[int, string](sqliteStore)
+	// ...
+}
+```
 
 ### Write your own custom store
 You also have the ability to write your own custom store by implementing the following interface:
