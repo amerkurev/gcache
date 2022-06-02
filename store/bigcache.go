@@ -11,7 +11,6 @@ type bigcacheStore struct {
 }
 
 // BigcacheStore creates a Bigcache data store.
-// See Bigcache docs https://github.com/allegro/bigcache.
 func BigcacheStore(bc *bigcache.BigCache) Store {
 	return &bigcacheStore{bc}
 }

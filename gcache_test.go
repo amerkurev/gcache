@@ -2,6 +2,7 @@ package gcache
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/allegro/bigcache/v3"
@@ -225,6 +226,58 @@ func TestRedisCache_Concurrency(t *testing.T) {
 	})
 
 	c := New[int, int](store.RedisStore(rdb))
+
+	goroutines := 10
+	items := 1000
+
+	var wg sync.WaitGroup
+
+	// concurrency write
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for k := 0; k < items; k++ {
+				// write
+				err := c.SetWithContext(ctx, k, k*k)
+				assert.Nil(t, err)
+
+				// read
+				v, err := c.GetWithContext(ctx, k+1)
+				if err != nil {
+					assert.True(t, errors.Is(err, ErrNotFound))
+				} else {
+					assert.Equal(t, v, (k+1)*(k+1))
+				}
+
+				// delete
+				err = c.DeleteWithContext(ctx, k-10)
+				assert.Nil(t, err)
+				err = c.Delete(k - 10)
+				assert.Nil(t, err)
+
+				// clear
+				if k%1000 == 0 {
+					err := c.ClearWithContext(ctx)
+					assert.Nil(t, err)
+				}
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func TestSQLiteCache_Concurrency(t *testing.T) {
+	db, err := sql.Open("sqlite3", "test.db")
+	assert.Nil(t, err)
+	t.Cleanup(func() {
+		assert.Nil(t, db.Close())
+	})
+
+	ctx := context.Background()
+	s, err := store.SQLiteStore(ctx, db)
+	assert.Nil(t, err)
+	c := New[int, int](s)
 
 	goroutines := 10
 	items := 1000

@@ -10,7 +10,6 @@ type redisStore struct {
 }
 
 // RedisStore creates a Redis data store.
-// See Redis docs https://github.com/go-redis/redis
 func RedisStore(rdb *redis.Client) Store {
 	return &redisStore{rdb}
 }
