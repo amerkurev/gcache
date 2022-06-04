@@ -337,6 +337,9 @@ func TestRedisCache_Context(t *testing.T) {
 
 	c := New[int, int](store.RedisStore(rdb))
 
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
 		for k := 0; k < 100_000; k++ {
 			err := c.SetWithContext(ctx, k, k*k)
@@ -345,11 +348,14 @@ func TestRedisCache_Context(t *testing.T) {
 				break
 			}
 		}
+		wg.Done()
 	}()
 
 	cancel()
-	r := <-ctx.Done()
-	assert.Equal(t, r, struct{}{})
+	wg.Wait()
+
+	assert.Equal(t, <-ctx.Done(), struct{}{})
+	assert.True(t, errors.Is(ctx.Err(), context.Canceled))
 }
 
 func TestCacheStats(t *testing.T) {
