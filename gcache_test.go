@@ -6,6 +6,8 @@ import (
 	"errors"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/allegro/bigcache/v3"
+	"github.com/amerkurev/gcache/internal/hasher"
+	"github.com/amerkurev/gcache/internal/marshaler"
 	"github.com/amerkurev/gcache/store"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
@@ -121,6 +123,30 @@ func TestMapCache_Struct(t *testing.T) {
 	v, err = c.GetWithContext(ctx, 100)
 	assert.Nil(t, v)
 	assert.True(t, errors.Is(err, ErrNotFound))
+}
+
+func TestMapCache_Unsupported(t *testing.T) {
+	var hashError *hasher.Error
+	c := New[complex128, int](store.MapStore(0))
+	c.UseStats()
+
+	_, err := c.Get(complex(10, 30))
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &hashError))
+
+	err = c.Set(complex(10, 30), 100)
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &hashError))
+
+	err = c.Delete(complex(10, 30))
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &hashError))
+
+	s, ok := c.Stats()
+	assert.True(t, ok)
+	assert.Equal(t, s.ErrReadCount, 1)
+	assert.Equal(t, s.ErrWriteCount, 1)
+	assert.Equal(t, s.ErrDeleteCount, 1)
 }
 
 func TestMapCache_Concurrency(t *testing.T) {
@@ -470,4 +496,19 @@ func TestCacheStats(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, s.ReadBytes, 0)
 	assert.Equal(t, s.WriteBytes, 0)
+}
+
+func TestCacheStats_Error(t *testing.T) {
+	var marshalError *marshaler.MarshalError
+	c := New[string, complex128](store.MapStore(0))
+	c.UseStats()
+
+	err := c.Set("a", complex(10, 30))
+	assert.NotNil(t, err)
+	assert.True(t, errors.As(err, &marshalError))
+
+	s, ok := c.Stats()
+	assert.True(t, ok)
+	assert.Equal(t, s.WriteCount, 0)
+	assert.Equal(t, s.ErrWriteCount, 1)
 }
