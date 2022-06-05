@@ -463,4 +463,11 @@ func TestCacheStats(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, s.ClearCount, goroutines)
 	assert.Equal(t, s.ErrClearCount, 0)
+
+	c.ResetStats()
+
+	s, ok = c.Stats()
+	assert.True(t, ok)
+	assert.Equal(t, s.ReadBytes, 0)
+	assert.Equal(t, s.WriteBytes, 0)
 }

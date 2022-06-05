@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"sync"
 	"testing"
 )
@@ -48,8 +49,14 @@ func TestSQLiteStore_Context(t *testing.T) {
 }
 
 func TestSQLiteStore(t *testing.T) {
+	filename := "test.db"
+	if _, err := os.Stat(filename); err == nil {
+		err := os.Remove(filename)
+		assert.Nil(t, err)
+	}
+
 	ctx := context.Background()
-	db, err := sql.Open("sqlite3", "test.db")
+	db, err := sql.Open("sqlite3", filename)
 	assert.Nil(t, err)
 	s, err := SQLiteStore(ctx, db)
 	assert.Nil(t, err)
