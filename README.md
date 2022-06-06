@@ -12,7 +12,7 @@
 [![GoVersion](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/gomods/athens)&nbsp;
 [![Build](https://github.com/amerkurev/gcache/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/amerkurev/gcache/actions/workflows/ci.yml)&nbsp;
 [![GoReportCard](https://goreportcard.com/badge/github.com/amerkurev/gcache)](https://goreportcard.com/report/github.com/amerkurev/gcache)&nbsp;
-[![CoverageStatus](https://coveralls.io/repos/github/amerkurev/gcache/badge.svg)](https://coveralls.io/github/amerkurev/gcache)&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/amerkurev/gcache/badge.svg?branch=master)](https://coveralls.io/github/amerkurev/gcache?branch=master)&nbsp;    
 [![GoDoc](https://godoc.org/github.com/amerkurev/gcache?status.svg)](https://godoc.org/github.com/amerkurev/gcache)&nbsp;
 [![License](http://img.shields.io/badge/license-mit-blue.svg)](https://raw.githubusercontent.com/amerkurev/gcache/master/LICENSE)&nbsp;
 
